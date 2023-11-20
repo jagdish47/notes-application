@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Note as NoteModel } from "./models/note";
 import Note from "./components/Note";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
 import styles from "./style/NotesPage.module.css";
+import styleUtils from "./style/utils.module.css";
 
 import * as NoteApi from "./network/notes_api";
+import AddNoteDialog from "./components/AddNoteDialog";
 
 function App() {
   const [notes, setNotes] = useState<NoteModel[]>([]);
+
+  const [showAddNoteDialog, setShowAddNoteDialog] = useState(false);
 
   useEffect(() => {
     loadNotes();
@@ -25,6 +29,12 @@ function App() {
 
   return (
     <Container>
+      <Button
+        className={`mb-4 ${styleUtils.blockCenter}`}
+        onClick={() => setShowAddNoteDialog(true)}
+      >
+        Add new note
+      </Button>
       <Row xs={1} md={2} xl={3}>
         {notes.map((note) => (
           <Col key={note._id}>
@@ -32,6 +42,16 @@ function App() {
           </Col>
         ))}
       </Row>
+
+      {showAddNoteDialog && (
+        <AddNoteDialog
+          onDismiss={() => setShowAddNoteDialog(false)}
+          onNoteSaved={(newNote) => {
+            setNotes([...notes, newNote]);
+            setShowAddNoteDialog(false);
+          }}
+        />
+      )}
     </Container>
   );
 }
